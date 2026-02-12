@@ -1,0 +1,25 @@
+name: 'bluealpha_dbt'
+version: '0.1'
+config-version: 2
+
+profile: 'bluealpha_dbt'
+
+model-paths: ['models']
+analysis-paths: ['analyses']
+test-paths: ['tests']
+macro-paths: ['macros']
+seed-paths: ['seeds']
+
+models:
+  bluealpha_dbt:
+    staging:
+      +schema: staging
+      +materialized: view
+
+    intermediate:
+      +schema: intermediate
+      +materialized: incremental
+
+    marts:
+      +schema: marts
+      +materialized: table

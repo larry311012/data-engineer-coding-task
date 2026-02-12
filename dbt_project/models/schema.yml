@@ -1,0 +1,74 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: google_ads_raw
+      - name: facebook_export_raw
+      - name: crm_revenue_raw
+
+models:
+  - name: stg_google_ads_daily
+    description: 'Cleaned Google Ads daily metrics. Converted cost_micros to spend in dollars'
+    columns:
+      - name: campaign_id
+        tests:
+          - not_null:
+              where: 'is_valid = true'
+      - name: campaign_date
+        tests:
+          - not_null:
+              where: 'is_valid = true' 
+  - name: stg_facebook_ads_daily
+    description: "Cleaned Facebook Ads daily metrics. Missing purchases coalesced to 0."
+    columns:
+      - name: campaign_id
+        tests:
+          - not_null:
+              where: "is_valid = true"
+      - name: campaign_date
+        tests:
+          - not_null:
+              where: "is_valid = true"
+  - name: stg_crm_orders_daily
+    description: "Cleaned CRM orders. Deduplicated by order_id, outliers and refunds flagged."
+    columns:
+      - name: order_id
+        tests:
+          - unique:
+              where: "is_valid = true"
+          - not_null:
+              where: "is_valid = true"
+      - name: channel_attributed
+        tests:
+          - accepted_values:
+              values: ['google', 'facebook', 'email', 'direct', 'organic']
+              where: "is_valid = true and channel_attributed is not null"
+
+  - name: int_campaign_daily
+    description: "Unified daily campaign metrics across Google and Facebook."
+    columns:
+      - name: campaign_id
+        tests:
+          - not_null
+      - name: campaign_date
+        tests:
+          - not_null
+  - name: int_crm_orders
+    description: "Valid, non-outlier CRM orders with normalized channel attribution."
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_campaign_daily
+    description: "Analytics-ready fact table: campaign metrics joined with attributed CRM revenue."
+    columns:
+      - name: campaign_id
+        tests:
+          - not_null
+      - name: campaign_date
+        tests:
+          - not_null

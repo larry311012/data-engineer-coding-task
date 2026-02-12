@@ -1,0 +1,12 @@
+bluealpha_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: '{{ env_var("WAREHOUSE_HOST") }}'
+      port: 5432
+      user: '{{ env_var("WAREHOUSE_USER")}}'
+      pass: '{{ env_var("WAREHOUSE_PASSWORD")}}'
+      dbname: '{{ env_var("WAREHOUSE_DB")}}'
+      schema: staging
+      threads: 4

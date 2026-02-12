@@ -40,7 +40,6 @@ validate as (
         ) as is_valid
     from clean
 )
-
 select 
     'facebook'::text as platform,
     *

@@ -21,12 +21,14 @@ def ingest_crm(**kwargs):
 def ingest_api(**kwargs):
     from pipeline.ingest_api_google_ads import run
     run_id = kwargs['ti'].xcom_pull(task_ids='create_run_context', key='run_id')
-    run(run_id=run_id)
+    load_date = kwargs['ti'].xcom_pull(task_ids='create_run_context', key='load_date')
+    run(run_id=run_id, load_date=load_date)
 
 def ingest_export(**kwargs):
     from pipeline.ingest_export_facebook import run
     run_id = kwargs['ti'].xcom_pull(task_ids='create_run_context', key='run_id')
-    run(run_id=run_id)
+    load_date = kwargs['ti'].xcom_pull(task_ids='create_run_context', key='load_date')
+    run(run_id=run_id, load_date=load_date)
 
 with DAG(
     dag_id='bluealpha_data_pipeline',
